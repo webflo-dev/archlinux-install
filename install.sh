@@ -3,11 +3,19 @@
 export INSTALLER_INSTALL_DIR=$HOME/_install
 export INSTALLER_WORKDIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
-configure_package_manager() {
-   local file="/etc/pacman.conf"
+get_packages(){
+  tail -n +2 packages.csv
+}
 
-  sudo bash -c "echo '
-  ' >> $file"
+install_script_requirements() {
+  sudo pacman -Syyu
+  sudo pacman --needed --noconfirm --noprogressbar gum
+}
+
+configure_package_manager() {
+  local file="/etc/pacman.conf"
+
+  sudo bash -c "echo >> $file"
 
   declare -A replacements
   replacements[Color]="Color"
@@ -21,10 +29,6 @@ configure_package_manager() {
 }
 
 
-system_update(){
-  sudo pacman -Syyu
-}
-
 install_yay() {
   if ! command -v yay >/dev/null 2>&1; then
     sudo pacman -S --needed base-devel
@@ -33,57 +37,85 @@ install_yay() {
   fi
 }
 
-
-install_packages() {
-	local return_value=$1
-  declare -A default_selected=()
-  packages=( $(tail -n +2 packages-$2.csv | cut -d ';' -f1) )
-  if [[ "$3" == "allow_selection" ]]; then
-    multiselect selected_packages packages default_selected
-  else
-    selected_packages=( ${packages[@]} )
-  fi
-  yay -S --needed --combinedupgrade --batchinstall --cleanafter --answerdiff None --answerclean None --removemake --noconfirm ${selected_packages[@]};
-  eval $return_value='("${selected_packages[@]}")'
+get_required_packages(){
+  get_packages | awk -F',' '$2 == "true" {gsub(";","\n");printf "%s\n%s", $3, $4}'
 }
 
+get_optional_packages_list(){
+  get_packages | awk -F',' '$2 != "true" {printf "[%s] %s\n", $1, $3}' | column -t
+}
 
-postinstall() {
-  for core_install in $INSTALLER_WORKDIR/core/*/postinstall.sh; do
-    # make -C $(dirname $core_install) install
-    source $core_install
-  done
+get_optional_packages() {
+  local source="$@"
+  get_packages | awk -v "source=$source" -F',' 'BEGIN {
+  split(source, tmp, " ");
+  for (i in tmp) packages[tmp[i]] = "";
+}
+  ($3 in packages) {gsub(";","\n");printf "%s\n%s", $3, $4}
+'
+}
+
+install_packages() {
+  local -n packages=$1
+  yay -S --needed --combinedupgrade --batchinstall --cleanafter --answerdiff None --answerclean None --removemake --noconfirm ${packages[@]}
 }
 
 
 postinstall_packages(){
   local -n packages=$1
   for package in "${packages[@]}"; do
-    folder=$INSTALLER_WORKDIR/postinstall/$package
-    if [[ -e $folder/postinstall.sh ]]; then
-      source $folder/postinstall.sh
+    folder=$INSTALLER_WORKDIR/postinstall_packages/$package
+    if [[ -e $folder/setup.sh ]]; then
+      source $folder/setup.sh
     fi
-
-    # if [[ -e $folder/Makefile ]]; then
-    #   make -C $folder install
-    # fi
   done
 }
 
+
+postinstall_scripts(){
+  for core_install in $INSTALLER_WORKDIR/postinstall_scripts/*/setup.sh; do
+    source $core_install
+  done
+}
+
+text_box() {
+  gum style --border normal --margin "1" --padding "1 2" --border-foreground 212 "$1"
+}
+
+text_title() {
+  gum style --foreground "$1"
+  echo ""
+}
+
 main(){
-  configure_package_manager
-  system_update
-  install_yay
+  text_box "archlinux install $(gum style --foreground 212 'custom') !"
+  text_title "Select additionnal packages to install"
 
-  install_packages core_packages "core" 
-  install_packages extra_packages "extra" "allow_selection"
+  required_packages=( $(get_required_packages) )
+  optional_packages=( $(get_optional_packages_list | gum choose --no-limit --height 30 | awk '{print $2}') )
+  packages_to_install=( $(get_optional_packages "${optional_packages[@]}") )
 
-  postinstall
-  postinstall_packages core_packages
-  postinstall_packages extra_packages
+  # install required packages and run postinstall setup
+  text_title "installing required packages..."
+  install_packages required_packages
+
+  text_title "running required postinstall scripts..."
+  postinstall_packages required_packages
+
+  # install selected optional packages and run postinstall setup
+  text_title "installing additionnal packages..."
+  install_packages packages_to_install
+
+  text_title "running additionnal postinstall scripts..."
+  postinstall_packages packages_to_install
+
+  # run postinstall scripts
+  text_title "running postinstall scripts..."
+  postinstall_scripts
+
+  text_box "custom installation of Archlinux is $(gum style --foreground 212 'done') !"
 }
 
 mkdir -p $INSTALLER_INSTALL_DIR
-source $INSTALLER_WORKDIR/multiselect.sh
 main "$@"
 
