@@ -9,7 +9,7 @@ get_packages(){
 
 install_script_requirements() {
   sudo pacman -Syyu
-  sudo pacman --needed --noconfirm --noprogressbar gum
+  sudo pacman -S --needed --noconfirm --noprogressbar gum
 }
 
 configure_package_manager() {
@@ -39,7 +39,7 @@ install_yay() {
 }
 
 get_required_packages(){
-  get_packages | awk -F',' '$2 == "true" {gsub(";","\n");printf "%s\n%s", $3, $4}'
+  get_packages | awk -F',' '$2 == "true" {gsub(";"," \n");printf " %s \n%s", $3, $4}'
 }
 
 get_optional_packages_list(){
@@ -52,7 +52,7 @@ get_optional_packages() {
   split(source, tmp, " ");
   for (i in tmp) packages[tmp[i]] = "";
 }
-  ($3 in packages) {gsub(";","\n");printf "%s\n%s", $3, $4}
+  ($3 in packages) {gsub(";"," \n");printf " %s \n%s", $3, $4}
 '
 }
 
@@ -89,7 +89,7 @@ text_title() {
 }
 
 main(){
-  
+
   configure_package_manager
   install_script_requirements
   install_yay
