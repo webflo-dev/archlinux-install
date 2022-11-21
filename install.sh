@@ -89,6 +89,11 @@ text_title() {
 }
 
 main(){
+  
+  configure_package_manager
+  install_script_requirements
+  install_yay
+
   text_box "archlinux install $(gum style --foreground 212 'custom') !"
   text_title "Select additionnal packages to install"
 
