@@ -88,7 +88,6 @@ extra,false,mkcert,,
 extra,false,croc,,https://github.com/schollz/croc
 extra,false,docker,,
 extra,false,companion,,https://github.com/bitfocus/companion
-extra,false,fzf-tab-git,,https://github.com/Aloxaf/fzf-tab
 extra,false,dbgate-bin,,https://github.com/dbgate/dbgate
 printing,true,cups,cups-filters;cups-pdf,
 printing,false,system-config-printer,,
