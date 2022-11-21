@@ -35,6 +35,7 @@ install_yay() {
     git clone https://aur.archlinux.org/yay.git $INSTALLER_INSTALL_DIR/yay
     (cd $INSTALLER_INSTALL_DIR/yay && makepkg -si)
   fi
+  yay -Syyu
 }
 
 get_required_packages(){
@@ -57,7 +58,7 @@ get_optional_packages() {
 
 install_packages() {
   local -n packages=$1
-  yay -S --needed --combinedupgrade --batchinstall --cleanafter --answerdiff None --answerclean None --removemake --noconfirm ${packages[@]}
+  yay -S --needed --combinedupgrade --batchinstall --cleanafter --answerdiff None --answerclean None --removemake ${packages[@]}
 }
 
 
