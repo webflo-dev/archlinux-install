@@ -11,3 +11,6 @@ install -d -m 744 ${DESTDIR_GIT}
 git clone --bare https://github.com/webflo-dev/dotfiles.git ${DESTDIR_GIT}/.git
 ${DESTDIR_BIN}/dot-config checkout -f
 git clone --depth=1 https://github.com/BlingCorp/bling.git ~/.config/awesome/modules/bling
+
+# install zap-zsh for zsh plugins
+sh <(curl -s https://raw.githubusercontent.com/zap-zsh/zap/master/install.sh)
