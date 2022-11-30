@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 SOURCEDIR=$(dirname ${BASH_SOURCE[0]})
-DESTDIR = ${HOME}/.config/docker
+DESTDIR=${HOME}/.config/docker
 
 install_docker(){
 	sudo systemctl start docker.service

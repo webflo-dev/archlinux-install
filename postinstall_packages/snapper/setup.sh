@@ -6,13 +6,13 @@ SOURCEDIR=$(dirname ${BASH_SOURCE[0]})
 cd /
 
 # Manage snapshots subvolume
-sudo umount /.snapshots
-sudo rm -rf /.snapshots
+# sudo umount /.snapshots
+# sudo rm -rf /.snapshots
 sudo snapper -c root create-config /
 sudo btrfs subvol del /.snapshots/
-sudo mkdir /.snapshots
-sudo mount -a
-sudo chown -R :wheel /.snapshots/
+#sudo mkdir /.snapshots
+#sudo mount -a
+#sudo chown -R :wheel /.snapshots/
 
 # Change default subvolume
 sudo btrfs subvol lis /

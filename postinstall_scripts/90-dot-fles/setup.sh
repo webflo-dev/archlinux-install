@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
-SOURCEDIR=$(dirname ${BASH_SOURCE[0]})
-DESTDIR_BIN = ${HOME}/.local/bin
-DESTDIR_GIT = ${HOME}/.local/share/dot-files
+#SOURCEDIR=$(dirname ${BASH_SOURCE[0]})
+SOURCEDIR=$(pwd)
+DESTDIR_BIN=${HOME}/.local/bin
+DESTDIR_GIT=${HOME}/.local/share/dot-files
 
 install -d -m 755 ${DESTDIR_BIN}
 install -Dm 755 ${SOURCEDIR}/dot-config ${DESTDIR_BIN}
