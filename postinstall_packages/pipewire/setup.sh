@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-SOURCEDIR=$(dirname ${BASH_SOURCE[0]})
+SOURCEDIR=${SOURCEDIR:-$(pwd)}
 
 install -d -m 744 $HOME/.config/
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-SOURCEDIR=$(dirname ${BASH_SOURCE[0]})
+SOURCEDIR=${SOURCEDIR:-$(pwd)}
 DESTDIR=/etc/X11/xorg.conf.d
 
 sudo install -d -m 755 ${DESTDIR}

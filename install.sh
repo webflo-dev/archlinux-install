@@ -67,7 +67,8 @@ postinstall_packages(){
   for package in "${packages[@]}"; do
     folder=$INSTALLER_WORKDIR/postinstall_packages/$package
     if [[ -e $folder/setup.sh ]]; then
-      source $folder/setup.sh
+      SOURCEDIR=$folder source $folder/setup.sh
+      unset SOURCEDIR
     fi
   done
 }
@@ -75,7 +76,8 @@ postinstall_packages(){
 
 postinstall_scripts(){
   for core_install in $INSTALLER_WORKDIR/postinstall_scripts/*/setup.sh; do
-    source $core_install
+    SOURCEDIR=$(dirname $core_install) source $core_install
+    unset SOURCEDIR
   done
 }
 

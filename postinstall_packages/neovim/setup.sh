@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-SOURCEDIR=$(dirname ${BASH_SOURCE[0]})
+SOURCEDIR=${SOURCEDIR:-$(pwd)}
 DESTDIR=${HOME}/.config/nvim
 
 install -d -m 755 ${DESTDIR}

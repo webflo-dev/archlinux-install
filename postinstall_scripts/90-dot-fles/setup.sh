@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
-#SOURCEDIR=$(dirname ${BASH_SOURCE[0]})
-SOURCEDIR=$(pwd)
+SOURCEDIR=${SOURCEDIR:-$(pwd)}
 DESTDIR_BIN=${HOME}/.local/bin
 DESTDIR_GIT=${HOME}/.local/share/dot-files
 
@@ -15,3 +14,4 @@ git clone --depth=1 https://github.com/BlingCorp/bling.git ~/.config/awesome/mod
 
 # install zap-zsh for zsh plugins
 sh <(curl -s https://raw.githubusercontent.com/zap-zsh/zap/master/install.sh)
+
