@@ -9,7 +9,8 @@ get_packages(){
 
 install_script_requirements() {
   sudo pacman -Syyu
-  sudo pacman -S --needed --noconfirm --noprogressbar gum
+  sudo pacman -S --needed --noconfirm --noprogressbar gum rustup
+  rustup default stable
 }
 
 configure_package_manager() {
@@ -39,11 +40,11 @@ install_yay() {
 }
 
 get_required_packages(){
-  get_packages | awk -F',' '$2 == "true" {gsub(";"," \n");printf " %s \n%s", $3, $4}'
+  get_packages | awk -F',' '$2 == "true" {gsub(";"," \n");printf "%s \n", $4}'
 }
 
 get_optional_packages_list(){
-  get_packages | awk -F',' '$2 != "true" {printf "[%s] %s\n", $1, $3}' | column -t
+  get_packages | awk -F',' '$2 != "true" {gsub(";"," \n");printf "[%s] %s\n", $1, $3}' | column -t
 }
 
 get_optional_packages() {
@@ -67,7 +68,8 @@ postinstall_packages(){
   for package in "${packages[@]}"; do
     folder=$INSTALLER_WORKDIR/postinstall_packages/$package
     if [[ -e $folder/setup.sh ]]; then
-      SOURCEDIR=$folder source $folder/setup.sh
+      SOURCEDIR=$folder 
+      source $folder/setup.sh
       unset SOURCEDIR
     fi
   done
